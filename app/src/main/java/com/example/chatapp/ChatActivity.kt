@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.chatapp.adapter.RecyclerAdapter
 import com.example.chatapp.model.ChatModel
@@ -76,7 +77,8 @@ class ChatActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         sendButton.setOnClickListener {
-            sendMessage(messageField.text.toString())
+            val message = messageField.text.toString().trim()
+            sendMessage(message)
             messageField.text?.clear()
         }
 
@@ -89,16 +91,19 @@ class ChatActivity : AppCompatActivity() {
             adapter.notifyItemInserted(messageList.size - 1)
             recyclerView.smoothScrollToPosition(adapter.itemCount - 1);
         } else {
-            startConversationMessage.visibility = View.GONE
+            startConversationMessage.visibility = View.VISIBLE
             adapter.notifyDataSetChanged()
         }
     }
 
 
     private fun sendMessage(message: String) {
-        val messageData =
-            ChatModel(message = message, name = userName, userId = userKey, time = getDateTme())
-        mRef.push().setValue(messageData)
+        if (message.isNotEmpty()) {
+            val messageData =
+                ChatModel(message = message, name = userName, userId = userKey, time = getDateTme())
+            mRef.push().setValue(messageData)
+        }
+
     }
 
     @SuppressLint("SimpleDateFormat")
